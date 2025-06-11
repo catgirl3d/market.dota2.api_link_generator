@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор ссылки API для покупки</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1c1f26;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 2rem;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #00ffc3;
+            font-size: 1.8rem;
+        }
+        form {
+            background-color: #2b2f3a;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 720px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 255, 195, 0.2);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #444851;
+            background-color: #1f222a;
+            color: #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #00ffc3;
+            outline: none;
+        }
+        input[disabled] {
+            background-color: #2d3039;
+            color: #888;
+            border-color: #444851;
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #00ffc3;
+            color: #1c1f26;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #00d3a9;
+            transform: translateY(-2px);
+        }
+        #result {
+            margin-top: 2rem;
+            word-wrap: break-word;
+            background-color: #2b2f3a;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #00ffc3;
+        }
+        .error {
+            color: #ff4d6d;
+            font-size: 0.95rem;
+        }
+        .hint {
+            font-size: 0.85rem;
+            color: #a5a5a5;
+            margin-top: 0.3rem;
+        }
+        a {
+            color: #00ffc3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Генератор ссылки API для покупки</h1>
+    <form id="apiForm">
+        <div class="form-group">
+            <label for="apiKey">Ключ API:</label>
+            <input type="text" id="apiKey" placeholder="Например, 1A2B3C4D5F" required>
+            <p class="hint">Ключ можно сгенерировать тут: <a href="https://market.csgo.com/ru/api/content/start#apigen" target="_blank">market.csgo.com</a><br>Не передавайте и не показывайте ваш API-ключ другим людям.</p>
+        </div>
+        <div class="form-group">
+            <label for="itemLink">Ссылка на предмет:</label>
+            <input type="text" id="itemLink" placeholder="Например, market-old.csgo.com/en/item/...">
+        </div>
+        <div class="form-group">
+            <label for="itemName">Название предмета:</label>
+            <input type="text" id="itemName" placeholder="Например, M4A4 | Tooth Fairy (Battle-Scarred)">
+            <p class="hint">Убедитесь, что название предмета полностью совпадает с написанием на странице покупки.</p>
+        </div>
+        <div class="form-group">
+            <label for="price">Цена (в рублях):</label>
+            <input type="text" id="price" placeholder="Например, 1000 или 0.42" required>
+            <p class="hint">Укажите только цифру — цену, соответствующую стоимости предмета на странице покупки.</p>
+        </div>
+        <div class="form-group">
+            <label for="tradeLink">Ссылка на обмен:</label>
+            <input type="text" id="tradeLink" placeholder="https://steamcommunity.com/tradeoffer/new/?partner=...&token=...">
+            <p class="hint">Эту ссылку нужно запросить у пользователя, которому совершается покупка. Найти её можно здесь: <a href="https://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">trade_offer_access_url</a></p>
+        </div>
+        <div class="form-group">
+            <label for="partner">ID партнёра:</label>
+            <input type="text" id="partner" placeholder="Например, 123456789" disabled>
+        </div>
+        <div class="form-group">
+            <label for="token">Токен:</label>
+            <input type="text" id="token" placeholder="Например, ABCDEF" disabled>
+        </div>
+        <button type="submit">Сгенерировать ссылку</button>
+    </form>
+    <div id="result"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function parseTradeLink(link) {
+                const partnerMatch = link.match(/partner=(\d+)/);
+                const tokenMatch = link.match(/token=([A-Za-z0-9_-]+)/);
+                return {
+                    partner: partnerMatch ? partnerMatch[1] : '',
+                    token: tokenMatch ? tokenMatch[1] : ''
+                };
+            }
+
+            function validateTradeLink(link) {
+                return /partner=\d+/.test(link) && /token=[A-Za-z0-9_-]+/.test(link);
+            }
+
+            $('#tradeLink').on('input', function () {
+                const tradeLink = $(this).val();
+                const resultDiv = $('#result');
+                const isValid = validateTradeLink(tradeLink);
+
+                if (!isValid && tradeLink.length > 0) {
+                    resultDiv.html(`<p class="error">Невалидная ссылка на обмен. Убедитесь, что она содержит partner и token.</p>`);
+                    $('#partner').val('');
+                    $('#token').val('');
+                } else {
+                    resultDiv.html('');
+                    const { partner, token } = parseTradeLink(tradeLink);
+                    $('#partner').val(partner);
+                    $('#token').val(token);
+                }
+            });
+
+            $('#itemLink').on('input', function () {
+                const link = $(this).val().trim();
+                if (link) {
+                    $('#itemName').prop('disabled', true);
+                } else {
+                    $('#itemName').prop('disabled', false);
+                }
+            });
+
+            $('#apiForm').on('submit', function(event) {
+                event.preventDefault();
+
+                const apiKey = $('#apiKey').val().trim();
+                let itemName = $('#itemName').val().trim();
+                const itemLink = $('#itemLink').val().trim();
+                let price = $('#price').val().trim();
+                const partner = $('#partner').val().trim();
+                const token = $('#token').val().trim();
+
+                let error = '';
+                if (!apiKey) error += 'Ключ API не может быть пустым.<br>';
+
+                let apiDomain = 'https://market.csgo.com';
+                if (itemLink) {
+                    if (itemLink.includes('market.csgo.com')) {
+                        apiDomain = 'https://market.csgo.com';
+                    } else if (itemLink.includes('market.dota2.net')) {
+                        apiDomain = 'https://market.dota2.net';
+                    } else if (itemLink.includes('market-old.csgo.com')) {
+                        apiDomain = 'https://market-old.csgo.com';
+                    } else if (itemLink.includes('tf2.tm')) {
+                        apiDomain = 'https://tf2.tm';
+                    } else {
+                        error += 'Ссылка на предмет должна содержать market.csgo.com, market.dota2.net, market-old.csgo.com или tf2.tm.<br>';
+                    }
+                }
+
+                if (itemLink) {
+                    const itemPattern = /\/item\/\d+-\d+-([^\/]+)/;
+                    const match = itemLink.match(itemPattern);
+                    if (match && match[1]) {
+                        try {
+                            itemName = decodeURIComponent(match[1]);
+                            $('#itemName').val(itemName);
+                        } catch (e) {
+                            error += 'Невозможно декодировать название предмета из ссылки.<br>';
+                        }
+                    } else {
+                        error += 'Некорректный формат ссылки на предмет.<br>';
+                    }
+                }
+
+                if (!itemName) {
+                    error += 'Название предмета не указано (введите вручную или укажите корректную ссылку).<br>';
+                }
+
+                price = price.replace(',', '.');
+                const priceFloat = parseFloat(price);
+                let priceInKopecks;
+                if (isNaN(priceFloat) || priceFloat < 0) {
+                    error += 'Цена должна быть положительным числом.<br>';
+                } else {
+                    priceInKopecks = Number.isInteger(priceFloat) ? priceFloat : Math.round(priceFloat * 100);
+                }
+
+                if (!/^\d+$/.test(partner)) {
+                    error += 'ID партнёра должен содержать только цифры.<br>';
+                }
+
+                if (!/^[A-Za-z0-9_-]+$/.test(token)) {
+                    error += 'Токен может содержать только буквы, цифры, символы _ или -.<br>';
+                }
+
+                const resultDiv = $('#result');
+                if (error) {
+                    resultDiv.html(`<p class="error">${error}</p>`);
+                    return;
+                }
+
+                const apiUrl = `${apiDomain}/api/v2/buy-for?key=${encodeURIComponent(apiKey)}&hash_name=${encodeURIComponent(itemName)}&price=${priceInKopecks}&partner=${encodeURIComponent(partner)}&token=${encodeURIComponent(token)}`;
+
+                resultDiv.html(`<p>Сгенерированная ссылка:</p><p><a href="${apiUrl}" target="_blank">${apiUrl}</a></p>`);
+            });
+        });
+    </script>
+</body>
+</html>
