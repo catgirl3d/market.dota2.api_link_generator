@@ -27,7 +27,7 @@
             box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.1);
         }
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             position: relative;
         }
         label {
@@ -114,12 +114,12 @@
 </head>
 <body>
 <h1>Генератор ссылки API для покупки</h1>
-<p style="text-align: center; max-width: 720px; margin: 0 auto 1.5rem auto; color: #495057; font-size: 1rem;">Эта форма позволяет сделать подарок своему другу: вы получаете от него ссылку на трейд, выбираете нужный предмет и оплачиваете его. После оплаты трейд с предметом будет автоматически отправлен другу.</p>
+<p style="text-align: center; max-width: 720px; margin: 0 auto 1.5rem auto; color: #495057; font-size: 1rem;">Эта форма позволяет сгенерировать ссылку для API для того, чтобы сделать подарок своему другу: вы получаете от него ссылку на трейд, выбираете нужный предмет и оплачиваете его. После оплаты трейд с предметом будет автоматически отправлен другу.</p>
     <form id="apiForm">
         <div class="form-group">
             <label for="apiKey">Ключ API:</label>
             <input type="text" id="apiKey" placeholder="API ключ">
-            <p class="hint">Ключ можно получить на <a href="https://market.csgo.com/ru/api/content/start#apigen" target="_blank">market.csgo.com</a>. Никому его не показывайте!</p>
+            <p class="hint">Ключ можно получить на <a href="https://market.csgo.com/ru/api/content/start#apigen" target="_blank">market.csgo.com</a>. Не передавайте и не показывайте ваш API-ключ другим людям!</p>
         </div>
         <div class="form-group">
             <label for="itemLink">Ссылка на предмет:</label>
@@ -128,17 +128,17 @@
         <div class="form-group">
             <label for="itemName">Название предмета:</label>
             <input type="text" id="itemName" placeholder="Название предмета">
-            <p class="hint">Проверьте, что название точно совпадает со страницей покупки.</p>
+            <p class="hint">Убедитесь, что название предмета полностью совпадает с написанием на странице покупки.</p>
         </div>
         <div class="form-group">
             <label for="price">Цена (в рублях):</label>
             <input type="text" id="price" placeholder="например, 1000 или 0.42">
-            <p class="hint">Только цифры. Цена должна совпадать с ценой на странице покупки.</p>
+            <p class="hint">Укажите только цифру — цену, соответствующую стоимости предмета на странице покупки.</p>
         </div>
         <div class="form-group">
             <label for="tradeLink">Ссылка на обмен:</label>
             <input type="text" id="tradeLink" placeholder="https://steamcommunity.com/tradeoffer/new/?partner=...&token=...">
-            <p class="hint">Запросите ссылку у пользователя. Найти её можно <a href="https://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">здесь</a>.</p>
+            <p class="hint">Запросите ссылку у вашего друга. Найти её можно <a href="https://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">здесь</a>.</p>
         </div>
         <div class="form-group">
             <label for="partner">ID партнёра:</label>
