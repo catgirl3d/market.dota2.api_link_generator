@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор ссылки API для покупки</title>
+    <title>Генератор ссылки API</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
             color: #212529;
             margin: 0;
-            padding: 2rem;
+            padding: 1.4rem;
         }
         h1 {
             text-align: center;
@@ -18,13 +18,13 @@
             color: #343a40;
             font-size: 2rem;
         }
-        form, #result {
+        form {
             background-color: #ffffff;
             padding: 2rem;
             border-radius: 12px;
             max-width: 720px;
             margin: 0 auto;
-            box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .form-group {
             margin-bottom: 1.2rem;
@@ -72,12 +72,6 @@
         button:hover {
             transform: translateY(-2px);
         }
-        #result {
-            display: none;
-            margin-top: 2rem;
-            word-wrap: break-word;
-            animation: fadeIn 0.3s ease-in-out;
-        }
         .error {
             color: #dc3545;
             font-size: 0.95rem;
@@ -88,8 +82,15 @@
             margin-top: 0.3rem;
         }
         .disabled-link {
-            opacity: 0.6;
+            opacity: 0.9;
             user-select: all;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            background-color: #f1f3f5;
+            display: block;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
         }
         .checkbox-inline {
             display: flex;
@@ -99,142 +100,162 @@
             margin-right: 0.5rem;
         }
         @media (max-width: 600px) {
-            form, #result {
+            form {
                 padding: 1.2rem;
             }
             h1 {
                 font-size: 1.5rem;
             }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
     </style>
 </head>
 <body>
-<h1>Генератор ссылки API для покупки</h1>
+<h1>Генератор ссылки API</h1>
 <p style="text-align: center; max-width: 720px; margin: 0 auto 1.5rem auto; color: #495057; font-size: 1rem;">Эта форма позволяет сгенерировать ссылку для API для того, чтобы сделать подарок своему другу: вы получаете от него ссылку на трейд, выбираете нужный предмет и оплачиваете его. После оплаты трейд с предметом будет автоматически отправлен другу.</p>
-    <form id="apiForm">
-        <div class="form-group">
-            <label for="apiKey">Ключ API:</label>
-            <input type="text" id="apiKey" placeholder="API ключ">
-            <p class="hint">Ключ можно получить на <a href="https://market.csgo.com/ru/api/content/start#apigen" target="_blank">market.csgo.com</a>. Не передавайте и не показывайте ваш API-ключ другим людям!</p>
-        </div>
-        <div class="form-group">
-            <label for="itemLink">Ссылка на предмет:</label>
-            <input type="text" id="itemLink" placeholder="market.csgo.com/item/...">
-        </div>
-        <div class="form-group">
-            <label for="itemName">Название предмета:</label>
-            <input type="text" id="itemName" placeholder="Название предмета">
-            <p class="hint">Убедитесь, что название предмета полностью совпадает с написанием на странице покупки.</p>
-        </div>
-        <div class="form-group">
-            <label for="price">Цена (в рублях):</label>
-            <input type="text" id="price" placeholder="например, 1000 или 0.42">
-            <p class="hint">Укажите только цифру — цену, соответствующую стоимости предмета на странице покупки.</p>
-        </div>
-        <div class="form-group">
-            <label for="tradeLink">Ссылка на обмен:</label>
-            <input type="text" id="tradeLink" placeholder="https://steamcommunity.com/tradeoffer/new/?partner=...&token=...">
-            <p class="hint">Запросите ссылку у вашего друга. Найти её можно <a href="https://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">здесь</a>.</p>
-        </div>
-        <div class="form-group">
-            <label for="partner">ID партнёра:</label>
-            <input type="text" id="partner" disabled>
-        </div>
-        <div class="form-group">
-            <label for="token">Токен:</label>
-            <input type="text" id="token" disabled>
-        </div>
-        <div class="form-group checkbox-inline">
-            <input type="checkbox" id="consent">
-            <label for="consent">Я понимаю, что переход по ссылке сразу отправит API-запрос (совершит покупку).</label>
-        </div>
-        <button type="submit">Сгенерировать ссылку</button>
-    </form>
-    <div id="result"></div>
+<form id="apiForm">
+    <div class="form-group">
+        <label for="apiKey">Ключ API:</label>
+        <input type="text" id="apiKey" placeholder="API ключ">
+        <p class="hint">Ключ можно сгенерировать на <a href="https://market.csgo.com/ru/api/content/start#apigen" target="_blank">market.csgo.com</a>. Не передавайте и не показывайте ваш API-ключ другим людям!</p>
+    </div>
+    <div class="form-group">
+        <label for="itemLink">Ссылка на предмет:</label>
+        <input type="text" id="itemLink" placeholder="market.dota2.net/item/...">
+    </div>
+    <div class="form-group">
+        <label for="itemName">Название предмета:</label>
+        <input type="text" id="itemName" placeholder="Название предмета">
+        <p class="hint">Убедитесь, что название предмета полностью совпадает с написанием на странице покупки.</p>
+    </div>
+    <div class="form-group">
+        <label for="price">Цена (в рублях):</label>
+        <input type="text" id="price" placeholder="например, 1000 или 0.42">
+        <p class="hint">Укажите только цифру — цену, соответствующую стоимости предмета на странице покупки.</p>
+    </div>
+    <div class="form-group">
+        <label for="tradeLink">Ссылка на обмен:</label>
+        <input type="text" id="tradeLink" placeholder="https://steamcommunity.com/tradeoffer/new/?partner=...&token=...">
+        <p class="hint">Запросите ссылку у вашего друга. Найти её можно <a href="https://steamcommunity.com/id/me/tradeoffers/privacy#trade_offer_access_url" target="_blank">здесь</a>.</p>
+    </div>
+    <div class="form-group" style="display: none;">
+        <label for="partner">ID партнёра:</label>
+        <input type="text" id="partner" disabled>
+    </div>
+    <div class="form-group" style="display: none;">
+        <label for="token">Токен:</label>
+        <input type="text" id="token" disabled>
+    </div>
+    <div class="form-group checkbox-inline">
+        <input type="checkbox" id="consent">
+        <label for="consent">Я понимаю, что переход по ссылке сразу отправит API-запрос (совершит покупку).</label>
+    </div>
+    <button type="submit">Сгенерировать ссылку</button>
+</form>
+						   
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(function () {
-            function parseTradeLink(link) {
-                const partnerMatch = link.match(/partner=(\d+)/);
-                const tokenMatch = link.match(/token=([A-Za-z0-9_-]+)/);
-                return {
-                    partner: partnerMatch ? partnerMatch[1] : '',
-                    token: tokenMatch ? tokenMatch[1] : ''
-                };
-            }
+<div id="popupOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index:1000;">
+    <div id="popupContent" style="background:white; padding:2rem; border-radius:12px; max-width:600px; margin:10% auto; position:relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <span id="closePopup" style="position:absolute; top:10px; right:15px; font-size:1.5rem; cursor:pointer;">&times;</span>
+        <div id="popupResult"></div>
+    </div>
+</div>
+						
+																 
+														  
+				  
+			 
 
-            $('#tradeLink').on('input', function () {
-                const val = $(this).val();
-                const { partner, token } = parseTradeLink(val);
-                $('#partner').val(partner);
-                $('#token').val(token);
-            });
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function () {
+        function parseTradeLink(link) {
+            const partnerMatch = link.match(/partner=(\d+)/);
+            const tokenMatch = link.match(/token=([A-Za-z0-9_-]+)/);
+            return {
+                partner: partnerMatch ? partnerMatch[1] : '',
+                token: tokenMatch ? tokenMatch[1] : ''
+            };
+        }
 
-            $('#itemLink').on('input', function () {
-                const link = $(this).val();
-                const match = link.match(/\/item\/\d+-\d+-([^\/]+)/);
-                if (match && match[1]) {
-                    $('#itemName').val(decodeURIComponent(match[1])).prop('disabled', true);
-                } else {
-                    $('#itemName').prop('disabled', false);
-                }
-            });
-
-            $('#apiForm').on('submit', function (e) {
-                e.preventDefault();
-                const apiKey = $('#apiKey').val().trim();
-                const itemName = $('#itemName').val().trim();
-                const itemLink = $('#itemLink').val().trim();
-                const price = $('#price').val().trim().replace(',', '.');
-                const partner = $('#partner').val().trim();
-                const token = $('#token').val().trim();
-                const consent = $('#consent').is(':checked');
-
-                let error = '';
-                let domain = '';
-
-                if (!apiKey) error += 'API ключ обязателен.<br>';
-                if (!itemName) error += 'Название предмета обязательно.<br>';
-                if (!price || isNaN(parseFloat(price))) error += 'Цена указана неверно.<br>';
-                if (!partner || !token) error += 'Ссылка на обмен должна содержать partner и token.<br>';
-                if (!consent) error += 'Вы должны подтвердить, что понимаете последствия перехода по ссылке.<br>';
-
-                if (itemLink.includes('market.csgo.com')) domain = 'https://market.csgo.com';
-                else if (itemLink.includes('market-old.csgo.com')) domain = 'https://market-old.csgo.com';
-                else if (itemLink.includes('market.dota2.net')) domain = 'https://market.dota2.net';
-                else if (itemLink.includes('tf2.tm')) domain = 'https://tf2.tm';
-                else error += 'Неизвестный домен в ссылке на предмет.<br>';
-
-                const resultDiv = $('#result');
-                if (error) {
-                    resultDiv.hide().html(`<p class="error">${error}</p>`).fadeIn();
-                    return;
-                }
-
-                const finalPrice = Number.isInteger(+price) ? price : Math.round(price * 100);
-                const url = `${domain}/api/v2/buy-for?key=${encodeURIComponent(apiKey)}&hash_name=${encodeURIComponent(itemName)}&price=${finalPrice}&partner=${partner}&token=${token}`;
-                resultDiv.hide().html(`
-                    <p><strong>Сгенерированная ссылка:</strong></p>
-                    <p><code id="apiLink" class="disabled-link">${url}</code></p>
-                    <button class="copy" onclick="copyToClipboard()">Скопировать</button>
-                    <p class="hint">Скопируйте ссылку и вставьте в адресную строку браузера. Переход по ссылке выполнит покупку.</p>
-                `).fadeIn();
-            });
+        $('#tradeLink').on('input', function () {
+            const val = $(this).val();
+            const { partner, token } = parseTradeLink(val);
+										
+            $('#partner').val(partner);
+						
+            $('#token').val(token);
+				 
         });
 
-        function copyToClipboard() {
-            const text = document.getElementById('apiLink').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Ссылка скопирована в буфер обмена.');
-            }).catch(err => {
-                alert('Ошибка при копировании: ' + err);
-            });
-        }
-    </script>
+        $('#itemLink').on('input', function () {
+            const link = $(this).val();
+            const match = link.match(/\/item\/\d+-\d+-([^\/]+)/);
+            if (match && match[1]) {
+                $('#itemName').val(decodeURIComponent(match[1])).prop('disabled', true);
+            } else {
+                $('#itemName').prop('disabled', false);
+            }
+        });
+
+        $('#apiForm').on('submit', function (e) {
+            e.preventDefault();
+            const apiKey = $('#apiKey').val().trim();
+            const itemName = $('#itemName').val().trim();
+            const itemLink = $('#itemLink').val().trim();
+            const price = $('#price').val().trim().replace(',', '.');
+            const partner = $('#partner').val().trim();
+            const token = $('#token').val().trim();
+            const consent = $('#consent').is(':checked');
+
+            let error = '';
+            let domain = '';
+																											   
+																																	  
+																																											
+
+            if (!apiKey) error += 'API ключ обязателен.<br>';
+            if (!itemName) error += 'Название предмета обязательно.<br>';
+            if (!price || isNaN(parseFloat(price))) error += 'Цена указана неверно.<br>';
+            if (!partner || !token) error += 'Ссылка на обмен должна содержать partner и token.<br>';
+            if (!consent) error += 'Вы должны подтвердить, что понимаете последствия перехода по ссылке.<br>';
+
+            if (itemLink.includes('market.csgo.com')) domain = 'https://market.csgo.com';
+            else if (itemLink.includes('market-old.csgo.com')) domain = 'https://market-old.csgo.com';
+            else if (itemLink.includes('market.dota2.net')) domain = 'https://market.dota2.net';
+            else if (itemLink.includes('tf2.tm')) domain = 'https://tf2.tm';
+            else error += 'Неизвестный домен в ссылке на предмет.<br>';
+
+            if (error) {
+                $('#popupResult').html(`<p class="error">${error}</p>`);
+                $('#popupOverlay').fadeIn();
+                return;
+            }
+
+            const finalPrice = Number.isInteger(+price) ? price : Math.round(price * 100);
+            const url = `${domain}/api/v2/buy-for?key=${encodeURIComponent(apiKey)}&hash_name=${encodeURIComponent(itemName)}&price=${finalPrice}&partner=${partner}&token=${token}`;
+            $('#popupResult').html(`
+                <p><strong>Сгенерированная ссылка:</strong></p>
+                <p><code id="apiLink" class="disabled-link">${url}</code></p>
+				<p class="hint">Скопируйте ссылку и вставьте в адресную строку браузера. Переход по ссылке выполнит покупку.</p>
+                <button class="copy" onclick="copyToClipboard()">Скопировать</button>
+            `);
+            $('#popupOverlay').fadeIn();
+			   
+        });
+
+        $('#closePopup').on('click', function () {
+            $('#popupOverlay').fadeOut();
+        });
+    });
+
+    function copyToClipboard() {
+        const text = document.getElementById('apiLink').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Ссылка скопирована в буфер обмена.');
+        }).catch(err => {
+            alert('Ошибка при копировании: ' + err);
+        });
+    }
+</script>
 </body>
 </html>
