@@ -14,7 +14,7 @@
         }
         h1 {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             color: #343a40;
             font-size: 2rem;
         }
@@ -24,14 +24,14 @@
             border-radius: 12px;
             max-width: 720px;
             margin: 0 auto;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.1);
         }
         .form-group {
             margin-bottom: 1.5rem;
             position: relative;
         }
         label {
-            display: inline;
+            display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
@@ -78,9 +78,6 @@
             word-wrap: break-word;
             animation: fadeIn 0.3s ease-in-out;
         }
-		#consent {
-			display: inline;
-}
         .error {
             color: #dc3545;
             font-size: 0.95rem;
@@ -93,6 +90,13 @@
         .disabled-link {
             opacity: 0.6;
             user-select: all;
+        }
+        .checkbox-inline {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-inline input {
+            margin-right: 0.5rem;
         }
         @media (max-width: 600px) {
             form, #result {
@@ -109,7 +113,8 @@
     </style>
 </head>
 <body>
-    <h1>Генератор ссылки API для покупки</h1>
+<h1>Генератор ссылки API для покупки</h1>
+<p style="text-align: center; max-width: 720px; margin: 0 auto 1.5rem auto; color: #495057; font-size: 1rem;">Эта форма позволяет сделать подарок своему другу: вы получаете от него ссылку на трейд, выбираете нужный предмет и оплачиваете его. После оплаты трейд с предметом будет автоматически отправлен другу.</p>
     <form id="apiForm">
         <div class="form-group">
             <label for="apiKey">Ключ API:</label>
@@ -143,7 +148,7 @@
             <label for="token">Токен:</label>
             <input type="text" id="token" disabled>
         </div>
-        <div class="form-group">
+        <div class="form-group checkbox-inline">
             <input type="checkbox" id="consent">
             <label for="consent">Я понимаю, что переход по ссылке сразу отправит API-запрос (совершит покупку).</label>
         </div>
@@ -191,7 +196,7 @@
                 const consent = $('#consent').is(':checked');
 
                 let error = '';
-                let domain = 'https://market.csgo.com';
+                let domain = '';
 
                 if (!apiKey) error += 'API ключ обязателен.<br>';
                 if (!itemName) error += 'Название предмета обязательно.<br>';
@@ -199,8 +204,11 @@
                 if (!partner || !token) error += 'Ссылка на обмен должна содержать partner и token.<br>';
                 if (!consent) error += 'Вы должны подтвердить, что понимаете последствия перехода по ссылке.<br>';
 
-                if (itemLink.includes('market-old.csgo.com')) domain = 'https://market-old.csgo.com';
+                if (itemLink.includes('market.csgo.com')) domain = 'https://market.csgo.com';
+                else if (itemLink.includes('market-old.csgo.com')) domain = 'https://market-old.csgo.com';
+                else if (itemLink.includes('market.dota2.net')) domain = 'https://market.dota2.net';
                 else if (itemLink.includes('tf2.tm')) domain = 'https://tf2.tm';
+                else error += 'Неизвестный домен в ссылке на предмет.<br>';
 
                 const resultDiv = $('#result');
                 if (error) {
